@@ -1,0 +1,7 @@
+---
+- name: site deployment
+  hosts: all
+  roles:
+    - name: ansible
+      tags: ansible
+...

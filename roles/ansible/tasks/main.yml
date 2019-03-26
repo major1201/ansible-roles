@@ -1,0 +1,21 @@
+---
+- name: install ansible package
+  when: ansible_os_family == "RedHat"
+  yum:
+    name: "{{ item }}"
+  with_items:
+    - ansible
+    - sshpass
+
+- name: ensure config directory exists
+  file:
+    path: /etc/ansible/
+    mode: 0755
+    state: directory
+
+- name: apply config file
+  template:
+    src: ansible.cfg
+    dest: /etc/ansible/ansible.cfg
+    mode: 0644
+...
