@@ -1,0 +1,13 @@
+---
+- name: sshd config
+  tags:
+    - sshd
+  template:
+    src: sshd_config
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: 0600
+  notify:
+    - restart sshd
+...

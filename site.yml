@@ -2,6 +2,8 @@
 - name: site deployment
   hosts: all
   roles:
+    - name: sshd
+      tags: sshd
     - name: ansible
       tags: ansible
 ...
