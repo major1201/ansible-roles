@@ -1,0 +1,17 @@
+---
+- name: stat /var/lib/ceph/mon/ceph-node/done file
+  stat:
+    path: /var/lib/ceph/mon/ceph-{{ inventory_hostname }}/done
+  register: ceph_mon_done
+
+- name: bootstrap
+  when: not ceph_mon_done.stat.exists
+  script: bootstrap.sh {{ ceph_uuid }} {{ inventory_hostname }} {{ ceph_mon_init_address }}
+
+- name: fetch ceph.client.admin.keyring
+  fetch:
+    src: "{{ item.remote }}"
+    dest: "{{ item.local }}"
+    flat: yes
+  with_items: "{{ ceph_keyrings }}"
+...

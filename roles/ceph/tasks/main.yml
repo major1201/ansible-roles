@@ -1,0 +1,88 @@
+---
+- name: install required pkgs
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+  yum:
+    name: yum-plugin-priorities
+    state: present
+
+- name: apply ceph repo
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+  template:
+    src: "{{ ceph_repo }}"
+    dest: /etc/yum.repos.d/ceph.repo
+
+- name: install ceph pkgs
+  package:
+    name: ceph
+    state: present
+  async: 1000
+  poll: 0
+  register: yum_sleeper
+
+- name: wait for ceph installation
+  async_status:
+    jid: "{{ yum_sleeper.ansible_job_id }}"
+  register: job_result
+  until: job_result.finished
+  retries: 100
+
+- name: useful scripts
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - src: rm-lvm-dev.sh
+      dest: /usr/local/bin/rm-lvm-dev.sh
+
+- name: apply config file
+  template:
+    src: "{{ ceph_conf }}"
+    dest: /etc/ceph/ceph.conf
+
+- name: bootstrap
+  when: ceph_bootstrap
+  include_tasks: bootstrap.yml
+
+- name: sync ceph.client.admin.keyring
+  copy:
+    src: "{{ item.local }}"
+    dest: "{{ item.remote }}"
+    owner: root
+    group: root
+    mode: 0600
+  with_items: "{{ ceph_keyrings }}"
+
+- name: stat done files
+  import_tasks: stat_done_files.yml
+
+- name: add init mon
+  when: ceph_bootstrap
+  include_tasks: add_mon.yml
+
+- name: add mon
+  when: ceph_mon
+  include_tasks: add_mon.yml
+
+- name: rm mon
+  when: not ceph_mon
+  include_tasks: rm_mon.yml
+
+- name: add mgr
+  when: ceph_mgr
+  include_tasks: add_mgr.yml
+
+- name: rm mgr
+  when: not ceph_mgr
+  include_tasks: rm_mgr.yml
+
+- name: add mds
+  when: ceph_mds
+  include_tasks: add_mds.yml
+
+- name: rm mds
+  when: not ceph_mds
+  include_tasks: rm_mds.yml
+...

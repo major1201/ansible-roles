@@ -1,0 +1,20 @@
+---
+- when: ceph_mgr_done.stat.exists
+  pause:
+    prompt: "Confirm to remove manager: {{ inventory_hostname }}"
+
+- name: stop and disable mgr service
+  systemd:
+    name: ceph-mgr@{{ inventory_hostname }}.service
+    enabled: no
+    state: stopped
+
+- name: rm mgr
+  when: ceph_mgr_done.stat.exists
+  script: rm_mgr.sh {{ inventory_hostname }}
+
+- name: remove /var/lib/ceph/mgr/ceph-hostname/
+  file:
+    path: /var/lib/ceph/mgr/ceph-{{ inventory_hostname }}/
+    state: absent
+...

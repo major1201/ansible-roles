@@ -1,0 +1,11 @@
+---
+- name: add mgr
+  when: not ceph_mgr_done.stat.exists
+  script: add_mgr.sh {{ inventory_hostname }}
+
+- name: start and enable mgr service
+  systemd:
+    name: ceph-mgr@{{ inventory_hostname }}.service
+    enabled: yes
+    state: started
+...

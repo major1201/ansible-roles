@@ -1,0 +1,11 @@
+---
+- name: add mon
+  when: not ceph_mon_done.stat.exists
+  script: add_mon.sh {{ ceph_bootstrap }} {{ inventory_hostname }}
+
+- name: start and enable mon service
+  systemd:
+    name: ceph-mon@{{ inventory_hostname }}.service
+    enabled: yes
+    state: started
+...

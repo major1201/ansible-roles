@@ -1,0 +1,11 @@
+---
+- name: add mds
+  when: not ceph_mds_done.stat.exists
+  script: add_mds.sh {{ inventory_hostname }}
+
+- name: start and enable mds service
+  systemd:
+    name: ceph-mds@{{ inventory_hostname }}.service
+    enabled: yes
+    state: started
+...

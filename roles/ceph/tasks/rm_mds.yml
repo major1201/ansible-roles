@@ -1,0 +1,20 @@
+---
+- when: ceph_mds_done.stat.exists
+  pause:
+    prompt: "Confirm to remove manager: {{ inventory_hostname }}"
+
+- name: stop and disable mds service
+  systemd:
+    name: ceph-mds@{{ inventory_hostname }}.service
+    enabled: no
+    state: stopped
+
+- name: rm mds
+  when: ceph_mds_done.stat.exists
+  script: rm_mds.sh {{ inventory_hostname }}
+
+- name: remove /var/lib/ceph/mds/ceph-hostname/
+  file:
+    path: /var/lib/ceph/mds/ceph-{{ inventory_hostname }}/
+    state: absent
+...

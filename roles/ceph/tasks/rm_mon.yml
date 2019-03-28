@@ -1,0 +1,20 @@
+---
+- when: ceph_mon_done.stat.exists
+  pause:
+    prompt: "Confirm to remove monitor: {{ inventory_hostname }}"
+
+- name: stop and disable mon service
+  systemd:
+    name: ceph-mon@{{ inventory_hostname }}.service
+    enabled: no
+    state: stopped
+
+- name: rm mon
+  when: ceph_mon_done.stat.exists
+  script: rm_mon.sh {{ inventory_hostname }}
+
+- name: remove /var/lib/ceph/mon/ceph-hostname/
+  file:
+    path: /var/lib/ceph/mon/ceph-{{ inventory_hostname }}/
+    state: absent
+...

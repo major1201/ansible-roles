@@ -1,0 +1,7 @@
+---
+ceph_keyrings:
+  - remote: /etc/ceph/ceph.client.admin.keyring
+    local: "{{ ceph_admin_keyring_local }}"
+  - remote: /var/lib/ceph/bootstrap-osd/ceph.keyring
+    local: "{{ ceph_bootstrap_osd_keyring_local }}"
+...

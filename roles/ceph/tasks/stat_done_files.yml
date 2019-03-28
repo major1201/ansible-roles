@@ -1,0 +1,16 @@
+---
+- name: stat /var/lib/ceph/mon/ceph-node/done file
+  stat:
+    path: /var/lib/ceph/mon/ceph-{{ inventory_hostname }}/done
+  register: ceph_mon_done
+
+- name: stat /var/lib/ceph/mgr/ceph-node/done file
+  stat:
+    path: /var/lib/ceph/mgr/ceph-{{ inventory_hostname }}/done
+  register: ceph_mgr_done
+
+- name: stat /var/lib/ceph/mds/ceph-node/done file
+  stat:
+    path: /var/lib/ceph/mds/ceph-{{ inventory_hostname }}/done
+  register: ceph_mds_done
+...
