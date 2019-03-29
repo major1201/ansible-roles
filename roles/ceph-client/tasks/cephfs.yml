@@ -1,0 +1,13 @@
+---
+- name: ensure cephfs mountpoint exists
+  file:
+    path: "{{ item.mountpoint }}"
+    state: directory
+  with_items: "{{ ceph_client_fs }}"
+
+- name: apply cephfs fstab
+  blockinfile:
+    block: "{{ lookup('template', 'fstab-fs') }}"
+    dest: /etc/fstab
+    marker: "# {mark} CEPH FS BLOCK"
+...

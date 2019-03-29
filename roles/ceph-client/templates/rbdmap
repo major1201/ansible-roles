@@ -1,0 +1,6 @@
+# RbdDevice             Parameters
+#poolname/imagename     id=client,keyring=/etc/ceph/ceph.client.keyring
+
+{% for i in ceph_client_rbdmap %}
+{{ i.pool }}/{{ i.image }} id={{ i.user }}
+{% endfor %}

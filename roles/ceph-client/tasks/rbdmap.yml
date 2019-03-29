@@ -1,0 +1,31 @@
+---
+- name: apply rbdmap
+  template:
+    src: rbdmap
+    dest: /etc/ceph/rbdmap
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart rbdmap
+
+- name: ensure rbd mountpoint exists
+  file:
+    path: "{{ item.mountpoint }}"
+    state: directory
+  with_items: "{{ ceph_client_rbdmap }}"
+
+- name: apply rbd fstab
+  blockinfile:
+    block: "{{ lookup('template', 'fstab-rbd') }}"
+    dest: /etc/fstab
+    marker: "# {mark} CEPH RBD BLOCK"
+  notify:
+    - restart rbdmap
+
+- name: enable and start rbdmap service
+  service:
+    name: rbdmap
+    enabled: yes
+    state: started
+...

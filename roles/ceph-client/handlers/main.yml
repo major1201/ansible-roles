@@ -1,0 +1,6 @@
+---
+- name: restart rbdmap
+  service:
+    name: rbdmap
+    state: restarted
+...
