@@ -1,0 +1,21 @@
+---
+- name: ensure .pip dir exists
+  file:
+    path: "{{ item }}"
+    mode: 0755
+    state: directory
+  with_items:
+    - /root/.pip/
+    - /etc/skel/.pip/
+
+- name: pip conf
+  copy:
+    src: pip.conf
+    dest: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - /root/.pip/pip.conf
+    - /etc/skel/.pip/pip.conf
+...

@@ -1,0 +1,46 @@
+---
+- import_tasks: hostname.yml
+  tags: hostname
+- import_tasks: authkey.yml
+  tags: authorized_key
+- import_tasks: hosts.yml
+  tags: hosts
+# - import_tasks: dns.yml
+#   tags: ["never", "dns"]
+- import_tasks: repo.yml
+  tags: ["repo", "never"]
+- import_tasks: soft.yml
+  tags: soft
+- import_tasks: vim.yml
+  tags: vim
+- import_tasks: alias.yml
+  tags: ["alias", "profile"]
+- import_tasks: motd.yml
+  tags: motd
+- import_tasks: bashps.yml
+  tags: ["bashps", "profile"]
+- import_tasks: histformat.yml
+  tags: ["histformat", "profile"]
+- import_tasks: bash_franzi.yml
+  tags: ["bash_franzi", "profile"]
+- import_tasks: scripts.yml
+  tags: scripts
+- import_tasks: selinux.yml
+  tags: selinux
+- import_tasks: python.yml
+  tags: ["python", "never"]
+- import_tasks: services.yml
+  tags: services
+- name: set timezone
+  tags: ["timezone", "never"]
+  file:
+    src: /usr/share/zoneinfo/Asia/Shanghai
+    dest: /etc/localtime
+    state: link
+    mode: 0777
+    force: true
+- import_tasks: sysctl.yml
+  tags: sysctl
+- import_tasks: ulimit.yml
+  tags: ulimit
+...

@@ -1,0 +1,9 @@
+---
+- name: bash PS1
+  copy:
+    src: bashps.sh
+    dest: /etc/profile.d/bashps.sh
+    owner: root
+    group: root
+    mode: 0644
+...

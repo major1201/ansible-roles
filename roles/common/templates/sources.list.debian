@@ -1,0 +1,11 @@
+deb {{ debian_sources_url }} {{ ansible_distribution_release }} main contrib non-free
+deb-src {{ debian_sources_url }} {{ ansible_distribution_release }} main contrib non-free
+
+deb {{ debian_sources_url }} {{ ansible_distribution_release }}-updates main contrib non-free
+deb-src {{ debian_sources_url }} {{ ansible_distribution_release }}-updates main contrib non-free
+
+deb {{ debian_sources_url }} {{ ansible_distribution_release }}-backports main contrib non-free
+deb-src {{ debian_sources_url }} {{ ansible_distribution_release }}-backports main contrib non-free
+
+deb {{ debian_sources_security_url }} {{ ansible_distribution_release }}/updates main contrib non-free
+deb-src {{ debian_sources_security_url }} {{ ansible_distribution_release }}/updates main contrib non-free

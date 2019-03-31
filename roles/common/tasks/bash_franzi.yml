@@ -1,0 +1,9 @@
+---
+- name: bash franzi
+  copy:
+    src: bash_franzi.sh
+    dest: /etc/profile.d/bash_franzi.sh
+    owner: root
+    group: root
+    mode: 0644
+...

@@ -1,0 +1,79 @@
+---
+- name: install required softwares
+  when: ansible_os_family == "RedHat"
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - lrzsz
+    - nethogs
+    - net-tools
+    - moreutils
+    - vim-enhanced
+    - tmux
+    - tree
+    - psmisc
+    - openssl
+    - openssl-static
+    - openssl-devel
+    - telnet
+    - zlib
+    - libtool
+    - deltarpm
+    - lshw
+    - ack
+    - bash-completion
+    - zip
+    - unzip
+    - lftp
+    - wget
+    - yum-utils
+    - conntrack-tools
+  async: 1000
+  poll: 0
+  register: yum_sleeper
+
+- name: wait for installation
+  when: ansible_os_family == "RedHat"
+  async_status:
+    jid: "{{ yum_sleeper.results[0].ansible_job_id }}"
+  register: job_result
+  until: job_result.finished
+  retries: 100
+
+- name: install required softwares centos6
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "6"
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - iptraf
+    - python-pip
+
+- name: install required softwares centos7
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - iptraf-ng
+    - python2-pip
+
+- name: install required softwares debian
+  when: ansible_os_family == "Debian"
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - apt-transport-https
+    - sudo
+    - lrzsz
+    - vim
+    - tmux
+    - tree
+    - psmisc
+    - telnet
+    - zip
+    - unzip
+    - conntrack
+    - lsof
+...

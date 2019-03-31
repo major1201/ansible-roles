@@ -1,0 +1,9 @@
+---
+- name: set history time format
+  copy:
+    src: histformat.sh
+    dest: /etc/profile.d/histformat.sh
+    owner: root
+    group: root
+    mode: 0644
+...

@@ -1,0 +1,12 @@
+---
+- name: vimrc file
+  copy:
+    src: .vimrc
+    dest: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - /root/.vimrc
+    - /etc/skel/.vimrc
+...

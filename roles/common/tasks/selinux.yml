@@ -1,0 +1,13 @@
+---
+# - name: setenforce 0
+#   tags:
+#     - selinux
+#   command: "/usr/sbin/setenforce 0"
+#   ignore_errors: true
+- name: disable selinux
+  lineinfile:
+    dest: /etc/selinux/config
+    regexp: '^SELINUX='
+    line: 'SELINUX=disabled'
+  ignore_errors: true
+...

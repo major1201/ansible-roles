@@ -1,0 +1,19 @@
+---
+- name: ensure /etc/sysctl.d exists
+  file:
+    path: /etc/sysctl.d
+    state: directory
+    mode: 0755
+
+- name: set sysctl
+  template:
+    src: "{{ sysctl_file }}"
+    dest: /etc/sysctl.d/99-sysctl.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: take effect - /sbin/sysctl -p
+  command: /sbin/sysctl --system
+  ignore_errors: true
+...

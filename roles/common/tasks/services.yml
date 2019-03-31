@@ -1,0 +1,28 @@
+---
+- name: disable and stop useless service
+  service:
+    name: "{{ item }}"
+    enabled: no
+    state: stopped
+  ignore_errors: true
+  with_items:
+    - abrt-ccpp
+    - abrt-oops
+    - abrt-vmcore
+    - abrt-xorg
+    - abrtd
+    - acpid
+    - atd
+    - auditd
+    - blk-availability
+    - chronyd
+    - cpuspeed
+    - cups
+    - iptables
+    - ip6tables
+    - kdump
+    - mdmonitor
+    - postfix
+    - restorecond
+    - firewalld
+...

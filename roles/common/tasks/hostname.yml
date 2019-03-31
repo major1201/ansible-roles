@@ -1,0 +1,11 @@
+---
+- name: set hostname in hosts
+  lineinfile:
+    dest: /etc/hosts
+    regexp: "{{ inventory_hostname }}"
+    line: "{{ hostname_resolve_ip }} {{ inventory_hostname }}"
+
+- name: set hostname
+  hostname:
+    name: "{{ inventory_hostname }}"
+...

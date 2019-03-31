@@ -1,0 +1,23 @@
+[epel]
+name=Extra Packages for Enterprise Linux $releasever - $basearch
+baseurl={{ yumrepo_mirrors_url }}/epel/$releasever/$basearch
+failovermethod=priority
+enabled=1
+gpgcheck=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-$releasever
+
+[epel-debuginfo]
+name=Extra Packages for Enterprise Linux $releasever - $basearch - Debug
+baseurl={{ yumrepo_mirrors_url }}/epel/$releasever/$basearch/debug
+failovermethod=priority
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-$releasever
+gpgcheck=0
+
+[epel-source]
+name=Extra Packages for Enterprise Linux $releasever - $basearch - Source
+baseurl={{ yumrepo_mirrors_url }}/epel/$releasever/SRPMS
+failovermethod=priority
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-$releasever
+gpgcheck=0

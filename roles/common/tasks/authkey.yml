@@ -1,0 +1,16 @@
+---
+- name: public key sync
+  when: authkey_public != ""
+  authorized_key:
+    user: root
+    key: "{{ lookup('file', authkey_public) }}"
+
+- name: authorized key sync
+  when: authkey_private != ""
+  copy:
+    owner: root
+    group: root
+    mode: 0400
+    src: "{{ authkey_private }}"
+    dest: /root/.ssh/id_rsa
+...

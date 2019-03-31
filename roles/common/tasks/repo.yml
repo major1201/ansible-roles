@@ -1,0 +1,67 @@
+---
+- name: yum repo
+  when: ansible_os_family == "RedHat"
+  template:
+    src: "{{ item }}"
+    dest: /etc/yum.repos.d/{{ item }}
+    owner: root
+    group: root
+    mode: 0644
+  with_items: ["CentOS-Base.repo", "epel.repo"]
+  notify:
+    - yum makecache
+
+- name: setfact
+  set_fact:
+    https_apt: "{{ ansible_distribution == 'Debian' and (debian_sources_url.startswith('https') or debian_sources_security_url.startswith('https')) }}"
+
+- name: check apt-transport-https pakcage
+  when: https_apt
+  shell: dpkg -l apt-transport-https | wc -l
+  register: dpkg_apt_transport_https
+
+- name: install apt-transport-https with http repo
+  when: https_apt and dpkg_apt_transport_https.stdout == '0'
+  block:
+    - template:
+        src: sources.list.debian
+        dest: /etc/apt/sources.list
+        owner: root
+        group: root
+        mode: 0644
+    - replace:
+        path: /etc/apt/sources.list
+        regexp: '^deb\shttps'
+        replace: "deb http"
+    - replace:
+        path: /etc/apt/sources.list
+        regexp: '^deb-src\shttps'
+        replace: "deb-src http"
+    - apt:
+        name: apt-transport-https
+        update_cache: yes
+
+- name: debian sources
+  when: ansible_distribution == "Debian"
+  template:
+    src: sources.list.debian
+    dest: /etc/apt/sources.list
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - apt-get update
+
+- name: ubuntu sources
+  when: ansible_distribution == "Ubuntu"
+  template:
+    src: sources.list.ubuntu
+    dest: /etc/apt/sources.list
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - apt-get update
+
+- meta: flush_handlers
+...

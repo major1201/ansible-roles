@@ -1,0 +1,40 @@
+[base]
+name=CentOS-$releasever - Base
+failovermethod=priority
+baseurl={{ yumrepo_mirrors_url }}/centos/$releasever/os/$basearch/
+gpgcheck=1
+gpgkey={{ yumrepo_mirrors_url }}/centos/RPM-GPG-KEY-CentOS-$releasever
+
+#released updates
+[updates]
+name=CentOS-$releasever - Updates
+failovermethod=priority
+baseurl={{ yumrepo_mirrors_url }}/centos/$releasever/updates/$basearch/
+gpgcheck=1
+gpgkey={{ yumrepo_mirrors_url }}/centos/RPM-GPG-KEY-CentOS-$releasever
+
+#additional packages that may be useful
+[extras]
+name=CentOS-$releasever - Extras
+failovermethod=priority
+baseurl={{ yumrepo_mirrors_url }}/centos/$releasever/extras/$basearch/
+gpgcheck=1
+gpgkey={{ yumrepo_mirrors_url }}/centos/RPM-GPG-KEY-CentOS-$releasever
+
+#additional packages that extend functionality of existing packages
+[centosplus]
+name=CentOS-$releasever - Plus
+failovermethod=priority
+baseurl={{ yumrepo_mirrors_url }}/centos/$releasever/centosplus/$basearch/
+gpgcheck=1
+enabled=0
+gpgkey={{ yumrepo_mirrors_url }}/centos/RPM-GPG-KEY-CentOS-$releasever
+
+#contrib - packages by Centos Users
+[contrib]
+name=CentOS-$releasever - Contrib
+failovermethod=priority
+baseurl={{ yumrepo_mirrors_url }}/centos/$releasever/contrib/$basearch/
+gpgcheck=1
+enabled=0
+gpgkey={{ yumrepo_mirrors_url }}/centos/RPM-GPG-KEY-CentOS-$releasever

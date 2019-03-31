@@ -1,0 +1,21 @@
+---
+- name: restart network manager
+  service:
+    name: NetworkManager
+    state: restarted
+
+- name: yum makecache
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version > "5"
+  yum:
+    name: '*'
+    update_cache: yes
+
+- name: apt-get update
+  apt:
+    update_cache: yes
+
+- name: restart rsyslog
+  service:
+    name: rsyslog
+    state: restarted
+...

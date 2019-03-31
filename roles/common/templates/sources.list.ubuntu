@@ -1,0 +1,11 @@
+deb {{ ubuntu_sources_url }} {{ ansible_distribution_release }} main restricted universe multiverse
+deb-src {{ ubuntu_sources_url }} {{ ansible_distribution_release }} main restricted universe multiverse
+
+deb {{ ubuntu_sources_url }} {{ ansible_distribution_release }}-security main restricted universe multiverse
+deb-src {{ ubuntu_sources_url }} {{ ansible_distribution_release }}-security main restricted universe multiverse
+
+deb {{ ubuntu_sources_url }} {{ ansible_distribution_release }}-updates main restricted universe multiverse
+deb-src {{ ubuntu_sources_url }} {{ ansible_distribution_release }}-updates main restricted universe multiverse
+
+deb {{ ubuntu_sources_url }} {{ ansible_distribution_release }}-backports main restricted universe multiverse
+deb-src {{ ubuntu_sources_url }} {{ ansible_distribution_release }}-backports main restricted universe multiverse

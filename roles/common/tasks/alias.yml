@@ -1,0 +1,14 @@
+---
+- name: remove colorls profile
+  file:
+    dest: /etc/profile.d/colorls.sh
+    state: absent
+
+- name: alias profile script
+  copy:
+    src: alias.sh
+    dest: /etc/profile.d/alias.sh
+    owner: root
+    group: root
+    mode: 0644
+...

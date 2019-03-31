@@ -1,0 +1,19 @@
+---
+- name: cmd track script
+  copy:
+    src: cmdtrack.sh
+    dest: /etc/profile.d/cmdtrack.sh
+    owner: root
+    group: root
+    mode: 0644
+
+- name: cmdtrack on rsyslog
+  copy:
+    src: cmdtrack.conf
+    dest: /etc/rsyslog.d/cmdtrack.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart rsyslog
+...

@@ -1,0 +1,12 @@
+---
+- name: custom script
+  copy:
+    src: "{{ item }}.py"
+    dest: /usr/local/bin/{{ item }}
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - rpmlist
+    - quichttp
+...
