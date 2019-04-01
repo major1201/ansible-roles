@@ -1,0 +1,10 @@
+---
+- name: cobbler sync
+  shell: cobbler sync
+
+- name: restart cobbler services
+  service:
+    name: "{{ item }}"
+    state: restarted
+  with_items: "{{ cobbler_services }}"
+...

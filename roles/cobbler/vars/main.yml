@@ -1,0 +1,8 @@
+---
+cobbler_services:
+  - httpd
+  - xinetd
+  - rsyncd
+  - dhcpd
+  - cobblerd
+...

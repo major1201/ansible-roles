@@ -1,0 +1,104 @@
+---
+- name: install cobbler related pkgs
+  yum:
+    name: "{{ item }}"
+  with_items:
+    - cobbler
+    - cobbler-web
+    - pykickstart
+    - httpd
+    - dhcp
+    - tftp-server
+    - xinetd
+    - rsync
+    - debmirror
+    - fence-agents
+    - python-django
+
+- name: set cobbler server ip
+  lineinfile:
+    dest: /etc/cobbler/settings
+    regexp: "^server:"
+    line: "server: {{ ansible_host }}"
+  notify:
+    - cobbler sync
+    - restart cobbler services
+
+- name: set cobbler next_server ip
+  lineinfile:
+    dest: /etc/cobbler/settings
+    regexp: "^next_server:"
+    line: "next_server: {{ ansible_host }}"
+  notify:
+    - cobbler sync
+    - restart cobbler services
+
+- name: enable manage dhcp
+  lineinfile:
+    dest: /etc/cobbler/settings
+    regexp: "^manage_dhcp:"
+    line: "manage_dhcp: 1"
+  notify:
+    - cobbler sync
+    - restart cobbler services
+
+- name: pxe just once to avoid loop boot with pxe
+  lineinfile:
+    dest: /etc/cobbler/settings
+    regexp: "^pxe_just_once:"
+    line: "pxe_just_once: 1"
+  notify:
+    - cobbler sync
+    - restart cobbler services
+
+- name: set default password
+  lineinfile:
+    dest: /etc/cobbler/settings
+    regexp: "^default_password_crypted:"
+    line: "default_password_crypted: \"{{ cobbler_default_password }}\""
+  notify:
+    - cobbler sync
+    - restart cobbler services
+
+- name: enable tftp in xinet config
+  replace:
+    dest: /etc/xinetd.d/tftp
+    regexp: ^(\s*disable\s*=\s*)yes$
+    replace: \1no
+    backup: yes
+  notify:
+    - cobbler sync
+    - restart cobbler services
+
+- name: comment out dists and arches in debmirrors for proper debian support
+  replace:
+    dest: /etc/debmirror.conf
+    regexp: "{{ item.reg }}"
+    replace: "{{ item.repl }}"
+  with_items:
+    - reg: ^@dists=(.*)$
+      repl: "#@dists=\\1"
+    - reg: ^@arches=(.*)$
+      repl: "#@arches=\\1"
+  notify:
+    - cobbler sync
+    - restart cobbler services
+
+- name: set dhcp policies
+  template:
+    src: dhcp.template
+    dest: /etc/cobbler/dhcp.template
+  notify:
+    - cobbler sync
+
+- name: cobbler get-loaders
+  shell: cobbler get-loaders
+
+- name: enable and start cobbler services
+  service:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  ignore_errors: true
+  with_items: "{{ cobbler_services }}"
+...
