@@ -1,0 +1,27 @@
+---
+- name: install dhcpd packages
+  when: ansible_os_family == "RedHat"
+  yum:
+    name: "{{ item }}"
+  with_items:
+    - dhcp
+    - dhcp-devel
+    - dhcping
+
+- name: apply config files
+  template:
+    src: "{{ item.src_path }}"
+    dest: /etc/dhcp/{{ item.name }}
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode | default(0644) }}"
+  with_items: "{{ dhcpd_conf_list }}"
+  notify:
+    - restart dhcpd server
+
+- name: enable and start dhcpd
+  service:
+    name: dhcpd
+    enabled: yes
+    state: started
+...

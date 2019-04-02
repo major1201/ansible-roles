@@ -1,0 +1,6 @@
+---
+dns_servers: "8.8.8.8, 8.8.4.4"
+dhcpd_conf_list:
+  - name: dhcpd.conf
+    src_path: dhcpd.conf
+...
