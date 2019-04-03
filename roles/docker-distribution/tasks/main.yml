@@ -1,0 +1,28 @@
+---
+- name: install docker distribution
+  yum:
+    name: docker-distribution
+
+- name: ensure etc directory exists
+  file:
+    path: /etc/docker-distribution/registry/
+    mode: 0755
+    state: directory
+
+- name: apply config files
+  template:
+    src: "{{ item.src_path }}"
+    dest: "/etc/docker-distribution/registry/{{ item.name }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode | default(0644) }}"
+  with_items: "{{ docker_distribution_conf_list }}"
+  notify:
+    - restart docker distribution
+
+- name: enable and start docker distribution
+  service:
+    name: docker-distribution
+    enabled: yes
+    state: started
+...

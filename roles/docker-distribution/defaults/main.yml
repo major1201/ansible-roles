@@ -1,0 +1,5 @@
+---
+docker_distribution_conf_list:
+  - src_path: config.yml
+    name: config.yml
+...
