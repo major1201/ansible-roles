@@ -1,0 +1,19 @@
+---
+- name: install packages(debian)
+  when: is_debian_family
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - ipmitool
+    - openipmi
+
+- name: install packages(rhel)
+  when: is_redhat_family
+  yum:
+    name: ipmitool
+
+- name: load modules on boot
+  copy:
+    src: ipmi.conf
+    dest: /etc/modules-load.d/ipmi.conf
+...
