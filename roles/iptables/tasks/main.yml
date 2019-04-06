@@ -1,0 +1,59 @@
+---
+- name: install iptables pkgs(rhel7)
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+  block:
+    - systemd:
+        name: firewalld
+        masked: yes
+    - yum:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - iptables
+        # - iptables-services
+
+- name: install iptables pkgs(debian)
+  when: ansible_os_family == "Debian"
+  block:
+    - apt:
+        name: ufw
+        state: absent
+    - apt:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - iptables
+        # - iptables-persistent
+
+- name: apply iptables-one.service
+  copy:
+    src: iptables-one.service
+    dest: /etc/systemd/system/iptables-one.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - systemd daemon reload
+
+- name: apply iptables scripts
+  when: iptables_script != ""
+  template:
+    src: "{{ iptables_script }}"
+    dest: /usr/local/bin/iptables-one.sh
+    owner: root
+    group: root
+    mode: 0755
+  notify:
+    - restart iptables-one
+    # - save iptables(rhel7)
+    # - save iptables(debian)
+    # - restart iptables(rhel7)
+    # - restart iptables(debian)
+
+- name: enable and start service
+  when: iptables_script != ""
+  systemd:
+    name: iptables-one.service
+    enabled: yes
+    state: started
+...

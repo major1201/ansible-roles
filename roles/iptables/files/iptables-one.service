@@ -1,0 +1,15 @@
+[Unit]
+Description=iptables one service
+DefaultDependencies=no
+Before=network.target
+Wants=systemd-modules-load.service local-fs.target
+After=systemd-modules-load.service local-fs.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/iptables-one.sh debug
+ExecStop=/usr/local/bin/iptables-one.sh stop
+
+[Install]
+WantedBy=multi-user.target
