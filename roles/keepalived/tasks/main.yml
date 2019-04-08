@@ -1,0 +1,24 @@
+---
+- name: install keepalived packages
+  yum:
+    name: "{{ item }}"
+  with_items:
+    - keepalived
+    - ipvsadm
+
+- name: apply keepalived config files
+  template:
+    src: "{{ keepalived_config }}"
+    dest: /etc/keepalived/keepalived.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart keepalived
+
+- name: enable and start keepalived service
+  service:
+    name: keepalived
+    enabled: yes
+    state: started
+...
