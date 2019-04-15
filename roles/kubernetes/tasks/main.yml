@@ -1,0 +1,31 @@
+---
+- name: stop swap
+  shell: |
+    /sbin/swapoff -a
+    awk '{if ($3 == "swap" && $0 !~ /^#/) print "#"$0; else print;}' /etc/fstab > /tmp/fstab.tmp && \mv /tmp/fstab.tmp /etc/fstab
+
+- name: check if kubelet has already been installed
+  shell: rpm -qa kubelet | wc -l
+  register: rpm_kubelet
+
+- name: install kubernetes
+  when: rpm_kubelet.stdout == '0'
+  include_tasks: install_k8s.yml
+
+- name: set sysctl
+  block:
+    - copy:
+        src: sysctl.conf
+        dest: /etc/sysctl.d/k8s.conf
+        owner: root
+        group: root
+        mode: 0644
+    - command: /sbin/sysctl --system
+      ignore_errors: true
+
+- name: enable and start kubelet
+  service:
+    name: kubelet
+    enabled: yes
+    state: started
+...

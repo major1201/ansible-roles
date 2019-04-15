@@ -1,0 +1,13 @@
+---
+- name: install packages
+  yum:
+    name: {{ item }}
+  with_items: "{{ kubernetes_packages }}"
+
+- name: configure cgroup driver used by kubelet on master node
+  # when: kubernetes_role == "master"
+  block:
+    - command: sed -i "s/cgroup-driver=systemd/cgroup-driver=cgroupfs/g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+    - systemd:
+        daemon_reload: yes
+...
