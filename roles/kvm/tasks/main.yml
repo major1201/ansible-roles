@@ -1,0 +1,76 @@
+---
+- name: install kvm related packages(rhel)
+  when: ansible_os_family == "RedHat"
+  yum:
+    name: "{{ item }}"
+  with_items:
+    - qemu-kvm
+    - libvirt
+    - virt-install
+    - bridge-utils
+
+- name: install kvm related packages(debian)
+  when: ansible_distribution == "Debian" and ansible_distribution_major_version < '9'
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - qemu-kvm
+    - libvirt-bin
+    - virshinst
+    - libguestfs-tools
+
+- name: install kvm related packages(debian9)
+  when: ansible_distribution == "Debian" and ansible_distribution_major_version == '9'
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - qemu-kvm
+    - libvirt-clients
+    - qemu-utils
+    - libvirt-daemon-system
+    - virtinst
+    - libguestfs-tools
+
+- name: install kvm related packages(ubuntu)
+  when: ansible_distribution == "Ubuntu"
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - kvm
+    - qemu
+    - python-libvirt
+    - virtinst
+    - libguestfs-tools
+
+- name: enable and start libvirtd ksm ksmtuned(rhel)
+  when: ansible_os_family == "RedHat"
+  service:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  with_items:
+    - ksm
+    - ksmtuned
+    - libvirtd
+
+- name: enable and start libvirt-bin(debian)
+  when: ansible_distribution == "Debian" and ansible_distribution_major_version < '9'
+  service:
+    name: libvirt-bin
+    enabled: yes
+    state: started
+
+- name: enable and start libvirtd(debian9)
+  when: ansible_distribution == "Debian" and ansible_distribution_major_version == '9'
+  service:
+    name: libvirtd
+    enabled: yes
+    state: started
+
+- name: enable and start libvirt-bin(ubuntu)
+  when: ansible_distribution == "Ubuntu"
+  service:
+    name: libvirt-bin
+    enabled: yes
+    state: started
+...
