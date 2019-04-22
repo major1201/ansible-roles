@@ -1,0 +1,45 @@
+---
+- name: install packages
+  when: ansible_os_family == "RedHat"
+  yum:
+    name: "{{ item }}"
+  with_items:
+    - nfs-utils
+    - rpcbind
+
+- name: apply export file
+  template:
+    src: exports.j2
+    dest: /etc/exports
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - reload nfs
+
+- name: self hosts
+  lineinfile:
+    dest: /etc/hosts
+    create: yes
+    owner: root
+    group: root
+    mode: 0644
+    line: "127.0.0.1 {{ inventory_hostname }}"
+
+- name: set directory permissions
+  file:
+    dest: "{{ item.dir }}"
+    recurse: true
+    owner: nfsnobody
+    group: nfsnobody
+  with_items: "{{ nfs_items }}"
+
+- name: enable and start nfs
+  service:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  with_items:
+    - rpcbind
+    - nfs
+...

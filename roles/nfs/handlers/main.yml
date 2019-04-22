@@ -1,0 +1,12 @@
+---
+- name: reload nfs
+  shell: /usr/sbin/exportfs -rv
+
+- name: restart nfs
+  service:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - rpcbind
+    - nfs
+...
