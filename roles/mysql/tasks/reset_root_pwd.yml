@@ -1,0 +1,20 @@
+---
+- name: reset root password - 1. upload shell script
+  template:
+    src: reset_root_pwd.sh
+    dest: /tmp/reset_root_pwd.sh
+    mode: 0744
+
+- name: reset root password - 2. stop mysqld service
+  service:
+    name: mysqld
+    state: stopped
+
+- name: reset root password - 3. run reset_root_pwd.sh
+  shell: /tmp/reset_root_pwd.sh
+
+- name: reset root password - 4. remove script reset_root_pwd.sh
+  file:
+    path: /tmp/reset_root_pwd.sh
+    state: absent
+...

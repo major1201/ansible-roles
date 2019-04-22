@@ -1,0 +1,47 @@
+/var/log/mysql/mysql.log {
+    notifempty
+    daily
+    rotate 180
+    missingok
+    nocompress
+    postrotate
+        # just if mysqld is really running
+        if test -x /usr/local/mysql/bin/mysqladmin && \
+           /usr/local/mysql/bin/mysqladmin ping &>/dev/null
+        then
+           /usr/local/mysql/bin/mysqladmin flush-logs
+        fi
+    endscript
+}
+
+/var/log/mysql/error.log {
+    notifempty
+    daily
+    rotate 180
+    missingok
+    nocompress
+    postrotate
+        # just if mysqld is really running
+        if test -x /usr/local/mysql/bin/mysqladmin && \
+           /usr/local/mysql/bin/mysqladmin ping &>/dev/null
+        then
+           /usr/local/mysql/bin/mysqladmin flush-logs
+        fi
+    endscript
+}
+
+/var/log/mysql/slow.log {
+    notifempty
+    daily
+    rotate 180
+    missingok
+    nocompress
+    postrotate
+        # just if mysqld is really running
+        if test -x /usr/local/mysql/bin/mysqladmin && \
+           /usr/local/mysql/bin/mysqladmin ping &>/dev/null
+        then
+           /usr/local/mysql/bin/mysqladmin flush-logs
+        fi
+    endscript
+}

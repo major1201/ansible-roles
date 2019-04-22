@@ -1,0 +1,38 @@
+---
+- name: install package
+  when: rpm_mysql.stdout == '0'
+  yum:
+    name: mysql
+
+- name: reset root password
+  when: rpm_mysql.stdout == '0'
+  include_tasks: reset_root_pwd.yml
+
+- name: ensure log directory exists
+  file:
+    path: /var/log/mysql
+    owner: mysql
+    group: mysql
+    mode: 0755
+    state: directory
+
+- name: apply mysql config file
+  template:
+    src: "{{ mysql_config_file }}"
+    dest: /etc/my.cnf
+    mode: 0644
+  notify:
+    - restart mysqld
+
+- name: mysql logrotate
+  copy:
+    src: mysql.logrotate
+    dest: /etc/logrotate.d/mysql
+    mode: 0644
+
+- name: enable and start mysqld
+  service:
+    name: mysqld
+    enabled: yes
+    state: started
+...
