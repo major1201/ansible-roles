@@ -1,0 +1,23 @@
+---
+- name: install packages
+  when: is_redhat_family
+  yum:
+    name: "{{ item }}"
+  with_items:
+    - nfs-utils
+
+- name: ensure nfs mountpoint exists
+  file:
+    path: "{{ item.mountpoint }}"
+    state: directory
+  with_items: "{{ nfs_client_mounts }}"
+
+- name: mount all nfs
+  mount:
+    path: "{{ item.mountpoint }}"
+    src: "{{ item.src }}"
+    fstype: nfs
+    state: mounted
+    opts: "{{ item.opts | default('rw,_netdev') }}"
+  with_items: "{{ nfs_client_mounts }}"
+...
