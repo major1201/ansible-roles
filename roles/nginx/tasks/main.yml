@@ -1,0 +1,47 @@
+---
+- name: install package
+  yum:
+    name: nginx
+
+- name: ensure log directory exists
+  file:
+    path: /var/log/nginx
+    mode: 0755
+    state: directory
+
+- name: nginx logrotate
+  copy:
+    src: nginx.logrotate
+    dest: /etc/logrotate.d/nginx
+    mode: 0644
+
+- name: ensure config directory exists
+  file:
+    path: "{{ nginx_confdir }}{{ item.name | dirname }}"
+    mode: 0755
+    state: directory
+  with_items: "{{ nginx_conf_list }}"
+
+- name: apply config files
+  template:
+    src: "{{ item.src_path }}"
+    dest: "{{ nginx_confdir }}{{ item.name }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode | default(0644) }}"
+  with_items: "{{ nginx_conf_list }}"
+  notify:
+    - restart nginx
+
+- name: create www user
+  user:
+    name: www
+    createhome: no
+    shell: /sbin/nologin
+
+- name: enable and start nginx
+  service:
+    name: nginx
+    enabled: yes
+    state: started
+...

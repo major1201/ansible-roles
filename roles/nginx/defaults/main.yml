@@ -1,0 +1,4 @@
+---
+nginx_confdir: /etc/nginx/
+nginx_conf_list: []
+...
