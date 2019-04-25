@@ -1,0 +1,26 @@
+---
+- name: install ntp package
+  yum:
+    name: ntp
+
+- name: sync config file
+  template:
+    src: ntp.conf
+    dest: /etc/ntp.conf
+    mode: 0644
+  notify:
+    - restart ntpd
+
+- name: sync sysconfig ntpd
+  copy:
+    src: ntpd_sysconfig
+    dest: /etc/sysconfig/ntpd
+  notify:
+    - restart ntpd
+
+- name: enable and start ntpd
+  service:
+    name: ntpd
+    enabled: yes
+    state: started
+...

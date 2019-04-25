@@ -1,0 +1,22 @@
+# Ansible Role: ntp
+
+An Ansible Role that installs ntp on Linux.
+
+## Role Variables
+
+```yml
+ntp_servers:
+  - time.nist.gov prefer
+  - 0.cn.pool.ntp.org iburst
+  - 1.cn.pool.ntp.org iburst
+  - 2.cn.pool.ntp.org iburst
+  - 3.cn.pool.ntp.org iburst
+ntp_restrict:
+  - 127.0.0.1
+  - -6 ::1
+  - 0.0.0.0 mask 0.0.0.0 notrust
+```
+
+## Dependencies
+
+None.
