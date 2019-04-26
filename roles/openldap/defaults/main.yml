@@ -1,0 +1,27 @@
+---
+# common parameters
+ldap_suffix: "dc=example,dc=com"
+ldap_sudo_enabled: true
+
+ldap_ssl_enabled: true
+ldap_ssl_key: example.key
+ldap_ssl_crt: example.crt
+
+ldap_access_control_enabled: true
+
+# server parameters
+ldap_dc: example
+ldap_admin: ldapadm
+ldap_admin_dn: "cn={{ ldap_admin }},{{ ldap_suffix }}"
+ldap_password: admin
+
+ldap_ppolicy_enabled: true
+
+ldap_multimaster_enabled: false
+ldap_server_id: 101
+ldap_multimaster_group: openldap-server
+
+# client parameters
+ldap_server: 127.0.0.1 # ip or hostname
+ldap_sudoers_base: "ou=people,{{ ldap_suffix }}"
+...

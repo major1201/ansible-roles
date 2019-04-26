@@ -1,0 +1,191 @@
+#!/bin/bash
+
+set -e
+set -x
+
+# base
+echo --------------------------------------------------
+echo START: base
+ldap_password_hash=`slappasswd -s {{ ldap_password }}`
+cat << EOF | ldapadd -Y EXTERNAL -H ldapi:///
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+replace: olcSuffix
+olcSuffix: {{ ldap_suffix }}
+
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+replace: olcRootDN
+olcRootDN: {{ ldap_admin_dn }}
+
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+replace: olcRootPW
+olcRootPW: ${ldap_password_hash}
+
+dn: olcDatabase={1}monitor,cn=config
+changetype: modify
+replace: olcAccess
+olcAccess: {0}to * by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=extern
+ al,cn=auth" read by dn.base="{{ ldap_admin_dn }}" read by * none
+
+dn: cn=module,cn=config
+objectClass: olcModuleList
+cn: module
+
+dn: cn=module{0},cn=config
+changetype: modify
+add: olcModulePath
+olcModulePath: /usr/lib64/openldap/
+EOF
+
+ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/cosine.ldif
+ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/nis.ldif
+ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/inetorgperson.ldif
+
+cat << EOF | ldapadd -x -w {{ ldap_password }} -D "{{ ldap_admin_dn }}"
+dn: {{ ldap_suffix }}
+dc: {{ ldap_dc }}
+objectClass: top
+objectClass: domain
+EOF
+
+{% if ldap_ssl_enabled  %}
+# ssl
+echo --------------------------------------------------
+echo START: ssl
+cat << EOF | ldapmodify -Y EXTERNAL -H ldapi:///
+dn: cn=config
+changetype: modify
+replace: olcTLSCertificateFile
+olcTLSCertificateFile: /etc/openldap/certs/{{ ldap_ssl_crt | basename }}
+-
+replace: olcTLSCertificateKeyFile
+olcTLSCertificateKeyFile: /etc/openldap/certs/{{ ldap_ssl_key | basename }}
+EOF
+{% endif %}
+
+{% if ldap_sudo_enabled  %}
+ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/sudo.ldif
+{% endif %}
+
+{% if ldap_access_control_enabled %}
+# access control
+echo --------------------------------------------------
+echo START: access control
+cat << EOF | ldapadd -Y EXTERNAL -H ldapi:///
+dn: cn=module{0},cn=config
+changetype: modify
+add: olcModuleLoad
+olcModuleLoad: dynlist.la
+-
+add: olcModuleLoad
+olcModuleLoad: memberof.la
+
+dn: olcOverlay=dynlist,olcDatabase={2}hdb,cn=config
+objectClass: olcOverlayConfig
+objectClass: olcDynamicList
+olcOverlay: dynlist
+olcDlAttrSet: inetOrgPerson labeledURI
+EOF
+
+ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/ldapns.ldif
+{% endif %}
+
+{% if ldap_ppolicy_enabled %}
+# ppolicy
+echo --------------------------------------------------
+echo START: ppolicy
+cat << EOF | ldapadd -Y EXTERNAL -H ldapi:///
+dn: cn=module{0},cn=config
+changetype: modify
+add: olcModuleLoad
+olcModuleLoad: ppolicy.la
+EOF
+
+ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/ppolicy.ldif
+
+cat << EOF | ldapadd -Y EXTERNAL -H ldapi:///
+dn: olcOverlay=ppolicy,olcDatabase={2}hdb,cn=config
+changetype: add
+objectClass: olcOverlayConfig
+objectClass: olcPPolicyConfig
+olcOverlay: ppolicy
+olcPPolicyDefault: cn=default,ou=pwpolicies,{{ ldap_suffix }}
+olcPPolicyHashCleartext: TRUE
+olcPPolicyUseLockout: TRUE
+EOF
+
+cat << EOF | ldapmodify -Y EXTERNAL -H ldapi:///
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+add: olcAccess
+olcAccess: {0}to attrs=userPassword by self write by dn.base="{{ ldap_admin_dn }}" write by anonymous auth by * none
+-
+add: olcAccess
+olcAccess: {1}to * by dn.base="{{ ldap_admin_dn }}" write by self write by * read
+EOF
+{% endif %}
+
+# auditlog
+echo --------------------------------------------------
+echo START: auditlog
+cat << EOF | ldapadd -Y EXTERNAL -H ldapi:///
+dn: cn=module{0},cn=config
+changetype: modify
+add: olcModuleLoad
+olcModuleLoad: auditlog.la
+
+dn: olcOverlay=auditlog,olcDatabase={2}hdb,cn=config
+changetype: add
+objectClass: olcOverlayConfig
+objectClass: olcAuditLogConfig
+olcAuditlogFile: /var/log/slapd/auditlog.log
+EOF
+
+{% if ldap_multimaster_enabled %}
+# N-Way Multimaster
+echo --------------------------------------------------
+echo START: N-Way Multimaster
+cat << EOF | ldapmodify -Y EXTERNAL -H ldapi:///
+dn: cn=module{0},cn=config
+changetype: modify
+add: olcModuleLoad
+olcModuleLoad: syncprov.la
+
+dn: cn=config
+changetype: modify
+add: olcServerID
+olcServerID: {{ ldap_server_id }}
+
+dn: olcOverlay=syncprov,olcDatabase={2}hdb,cn=config
+changetype: add
+objectClass: olcOverlayConfig
+objectClass: olcSyncProvConfig
+olcOverlay: syncprov
+olcSpCheckpoint: 100 5
+
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+add: olcSyncRepl
+{% for h in groups[ldap_multimaster_group] %}
+{% if h != inventory_hostname %}
+olcSyncRepl: rid={{ hostvars[h]["ldap_server_id"] }}
+    provider=ldap://{{ hostvars[h]["ansible_host"] }}
+    binddn="{{ ldap_admin_dn }}"
+    bindmethod=simple
+    credentials={{ ldap_password }}
+    searchbase="{{ ldap_suffix }}"
+    type=refreshAndPersist
+    retry="5 5 300 5"
+    timeout=1
+{% endif %}
+{% endfor %}
+-
+add: olcMirrorMode
+olcMirrorMode: TRUE
+EOF
+{% endif %}
+
+# make a done flag
+touch /etc/openldap/done

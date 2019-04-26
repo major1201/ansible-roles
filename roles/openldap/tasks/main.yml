@@ -1,0 +1,9 @@
+---
+- name: deploying openldap server
+  tags: openldap-server
+  include_tasks: server.yml
+
+- name: deploying openldap client
+  tags: openldap-client
+  include_tasks: client.yml
+...

@@ -1,0 +1,39 @@
+---
+- name: install pkgs
+  yum:
+    name: "{{ item }}"
+  with_items:
+    - openldap-clients
+    - nss-pam-ldapd
+
+- name: authconfig
+  shell: authconfig --enableldap --enableldapauth --ldapserver={{ ldap_server }} --ldapbasedn="{{ ldap_suffix }}" --enablemkhomedir {{ '--enableldaptls' if ldap_ssl_enabled else '--disableldapstarttls' }} --update
+
+- name: apply nslcd.conf
+  template:
+    src: rhel7/nslcd.conf
+    dest: /etc/nslcd.conf
+
+- name: apply ssl cert
+  when: ldap_ssl_enabled
+  copy:
+    src: "{{ ldap_ssl_crt }}"
+    dest: /etc/openldap/cacerts/{{ ldap_ssl_crt | basename }}
+
+- name: apply sudo config
+  when: ldap_sudo_enabled
+  block:
+    - lineinfile:
+        path: /etc/nsswitch.conf
+        regexp: '^sudoers:'
+        line: 'sudoers: files ldap'
+    - template:
+        src: rhel7/sudo-ldap.conf
+        dest: /etc/sudo-ldap.conf
+
+- name: restart nslcd
+  service:
+    name: nslcd
+    state: restarted
+    enabled: yes
+...

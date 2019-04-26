@@ -1,0 +1,105 @@
+---
+- name: ensure rhel 7
+  when: not (ansible_os_family == "RedHat" and ansible_distribution_major_version == "7")
+  fail:
+    msg: "This OpenLDAP role only support rhel 7"
+
+- name: install pkgs
+  yum:
+    name: "{{ item }}"
+  with_items:
+    - openldap
+    - compat-openldap
+    - openldap-clients
+    - openldap-servers
+    - openldap-servers-sql
+    - openldap-devel
+
+- name: sudo version register
+  shell: rpm -qi sudo | grep '^Version' | awk '{print $3}'
+  register: sudo_version
+
+- name: ensure slapd log directory exists
+  file:
+    path: /var/log/slapd
+    state: directory
+    owner: ldap
+    group: ldap
+
+- name: apply config files
+  block:
+    - template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: "{{ item.owner | default('root') }}"
+        group: "{{ item.group | default('root') }}"
+      with_items:
+        - src: slapd.sysconfig
+          dest: /etc/sysconfig/slapd
+        - src: ldap.conf
+          dest: /etc/openldap/ldap.conf
+        - src: DB_CONFIG
+          dest: /var/lib/ldap/DB_CONFIG
+          owner: ldap
+          group: ldap
+      notify:
+        - restart slapd
+    - copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: "{{ item.owner | default('root') }}"
+        group: "{{ item.group | default('root') }}"
+        mode: "{{ item.mode | default('0644') }}"
+      with_items:
+        - src: "{{ ldap_ssl_key }}"
+          dest: /etc/openldap/certs/{{ ldap_ssl_key | basename }}
+          owner: ldap
+          group: ldap
+          mode: "0600"
+        - src: "{{ ldap_ssl_crt }}"
+          dest: /etc/openldap/certs/{{ ldap_ssl_crt | basename }}
+          owner: ldap
+          group: ldap
+          mode: "0600"
+      notify:
+        - restart slapd
+    - copy:
+        remote_src: "{{ item.remote_src | default('no') }}"
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: "{{ item.owner | default('root') }}"
+        group: "{{ item.group | default('root') }}"
+      with_items:
+        - remote_src: yes
+          src: /usr/share/doc/sudo-{{ sudo_version.stdout }}/schema.OpenLDAP
+          dest: /etc/openldap/schema/sudo.schema
+        - src: sudo.ldif
+          dest: /etc/openldap/schema/sudo.ldif
+        - src: ldapns.ldif
+          dest: /etc/openldap/schema/ldapns.ldif
+        - src: openldap.syntax
+          dest: /etc/openldap/openldap.syntax
+
+- name: enable and start service
+  service:
+    name: slapd
+    enabled: yes
+    state: started
+
+- name: stat /etc/openldap/done file
+  stat:
+    path: /etc/openldap/done
+  register: openldap_install_done
+
+- name: apply install script
+  template:
+    src: install.sh.j2
+    dest: /etc/openldap/install.sh
+    mode: 0755
+
+- name: run install script
+  when: not openldap_install_done.stat.exists
+  shell: /etc/openldap/install.sh > /var/log/slapd/install.log 2>&1
+  notify:
+    - restart slapd
+...

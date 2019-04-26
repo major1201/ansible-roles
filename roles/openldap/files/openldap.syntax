@@ -1,0 +1,10 @@
+/^creatorsName: /d
+/^modifiersName: /d
+/^modifyTimestamp: /d
+/^structuralobjectClass: /d
+/^createTimestamp: /d
+/^entryUUID: /d
+/^entryCSN: /d
+/^structuralObjectClass: /d
+/^pwdChangedTime: /d
+/^pwdFailureTime: /d

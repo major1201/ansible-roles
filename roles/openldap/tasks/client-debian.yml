@@ -1,0 +1,53 @@
+---
+- name: install packages
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - libnss-ldap
+    - libpam-ldap
+    - ldap-utils
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: install sudo-ldap
+  when: ldap_sudo_enabled
+  apt:
+    name: sudo-ldap
+
+- name: apply configs
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - src: debian/ldap-ldap.conf
+      dest: /etc/ldap/ldap.conf
+    - src: debian/ldap.conf
+      dest: /etc/ldap.conf
+
+- name: apply nsswitch.conf
+  lineinfile:
+    path: /etc/nsswitch.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - regexp: '^passwd:'
+      line: 'passwd:         compat ldap'
+    - regexp: '^group:'
+      line: 'group:          compat ldap'
+    - regexp: '^shadow:'
+      line: 'shadow:         compat ldap'
+    - regexp: '^sudoers:'
+      line: 'sudoers:        files [success=return] ldap'
+
+- name: config pam mkhomedir
+  lineinfile:
+    path: /etc/pam.d/common-session
+    regexp: pam_mkhomedir.so
+    line: 'session optional        pam_mkhomedir.so skel=/etc/skel umask=077'
+
+- name: enable passwd change self passwd
+  lineinfile:
+    path: /etc/pam.d/common-password
+    regexp: pam_ldap.so
+    line: 'password    [success=1 user_unknown=ignore default=die] pam_ldap.so try_first_pass'
+...
