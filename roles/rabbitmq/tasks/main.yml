@@ -1,0 +1,22 @@
+---
+- name: install package
+  yum:
+    name: rabbimq-server
+
+- name: apply config files
+  template:
+    src: "{{ item }}"
+    dest: /etc/rabbitmq/{{ item }}
+  with_items:
+    - rabbitmq-env.conf
+    - rabbitmq.config
+    - enabled_plugins
+  notify:
+    - restart rabbitmq server
+
+- name: enable and start rabbitmq server
+  service:
+    name: rabbitmq-server
+    enabled: yes
+    state: started
+...
