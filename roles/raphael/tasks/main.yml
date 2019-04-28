@@ -1,0 +1,44 @@
+---
+- name: ensure rhel 7
+  when: not is_rhel7
+  fail:
+    msg: "This raphael role only support rhel 7"
+
+- name: install packages
+  yum:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - raphael
+    - nginx
+  notify:
+    - restart raphael
+
+- name: apply raphael config file
+  template:
+    src: config.yml
+    dest: /etc/raphael/config.yml
+  notify:
+    - restart raphael
+
+- name: apply nginx config file
+  template:
+    src: "{{ item }}"
+    dest: /etc/{{ item }}
+  with_items:
+    - nginx/nginx.conf
+    - nginx/conf.d/ngx_status.conf
+    - nginx/conf.d/raphael.conf
+  notify:
+    - reload nginx
+
+- name: enable start raphael sevices
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  with_items:
+    - raphael
+    - nginx
+...

@@ -1,0 +1,44 @@
+---
+system:
+  project_name: raphael
+
+logging:
+  stdout:
+    enable: false
+    format:
+    level:
+  file:
+    enable: true
+    format:
+    level:
+    path: /var/log/raphael/raphael.log
+    rotating:
+      enable: true
+      when: MIDNIGHT
+      backup_count: 180
+  loggers:
+    - name: requests
+      level: 100
+    - name: werkzeug
+      level: 100
+
+dao:
+  url: mysql+mysqldb://{{ raphael_db_username }}:{{ raphael_db_password }}@{{ raphael_db_server }}/{{ raphael_db_database }}?charset=utf8
+  pool_size: 20
+  max_overflow: 0
+  pool_recycle: 5
+  pool_timeout: 3600
+
+cache:
+  memcached:
+    enabled: false
+    server_list:
+      - 127.0.0.1:11211
+
+web:
+  listen_addr: 0.0.0.0
+  port: 8000
+  debug: false
+  threaded: true
+  cookie_secret: b5b0215e4ed24ced8a0a2d3779bd81f2
+...

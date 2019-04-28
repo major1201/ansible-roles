@@ -1,0 +1,11 @@
+---
+- name: restart raphael
+  service:
+    name: raphael
+    state: restarted
+
+- name: reload nginx
+  service:
+    name: nginx
+    state: reloaded
+...
