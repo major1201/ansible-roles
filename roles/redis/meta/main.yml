@@ -1,0 +1,16 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: major1201
+  description: redis
+  license: MIT
+  min_ansible_version: 2.4
+  platforms:
+    - name: EL
+      versions:
+        - 6
+        - 7
+  galaxy_tags:
+    - system
+    - redis
