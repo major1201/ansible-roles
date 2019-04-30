@@ -1,0 +1,24 @@
+---
+rsync_uid: root
+rsync_gid: root
+rsync_max_connections: 4
+rsync_motd: ""
+# rsync_hosts_* e.g.: 192.168.224.0/255.255.255.0 192.168.2.0/255.255.255.0
+rsync_hosts_allow: "*"
+rsync_hosts_deny: ""
+
+# rsync_dirs example:
+# rsync_dirs:
+#   - name: dir1
+#     path: /home/
+#     auth_users: root
+#     comment: ""
+#     read_only: true
+rsync_dirs: []
+
+# rsync_secrets example:
+# rsync_secrets:
+#   - name: user1
+#     secret: password
+rsync_secrets: []
+...

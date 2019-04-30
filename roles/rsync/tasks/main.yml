@@ -1,0 +1,86 @@
+---
+- name: rhel6 pkgs
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "6"
+  set_fact:
+    rsync_pkgs:
+      - rsync
+      - xinetd
+
+- name: rhel7 pkgs
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+  set_fact:
+    rsync_pkgs:
+      - rsync
+
+- name: install rsync package
+  when: ansible_os_family == "RedHat"
+  yum:
+    name: "{{ item }}"
+  with_items: "{{ rsync_pkgs }}"
+
+- name: rsync config file
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+  with_items:
+    - src: rsyncd.conf
+      dest: /etc/rsyncd.conf
+      owner: root
+      group: root
+      mode: "0644"
+    - src: rsyncd.motd
+      dest: /etc/rsyncd.motd
+      owner: root
+      group: root
+      mode: "0644"
+    - src: rsyncd.secrets
+      dest: /etc/rsyncd.secrets
+      owner: root
+      group: root
+      mode: "0600"
+  notify:
+    - restart rsyncd rhel6
+    - restart rsyncd rhel7
+
+- name: ensure log directory exists
+  file:
+    path: /var/log/rsync
+    owner: "{{ rsync_uid }}"
+    group: "{{ rsync_gid }}"
+    mode: 0755
+    state: directory
+
+- name: ensure sync path exists
+  file:
+    path: "{{ item.path }}"
+    owner: "{{ rsync_uid }}"
+    group: "{{ rsync_gid }}"
+    mode: 0755
+  with_items: "{{ rsync_dirs }}"
+
+- name: enable rsync in xinetd(rhel6)
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "6"
+  copy:
+    src: rsync.xinetd
+    dest: /etc/xinetd.d/rsync
+    owner: root
+    group: root
+    mode: 0644
+
+- name: enable and start xinetd(rhel6)
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+  service:
+    name: xinetd
+    enabled: yes
+    state: started
+
+- name: enable and start rsyncd(rhel7)
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+  service:
+    name: rsyncd
+    enabled: yes
+    state: started
+...
