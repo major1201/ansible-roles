@@ -1,0 +1,6 @@
+{
+	"server": "{{ shadowsocks_listen }}",
+	"port_password": {{ shadowsocks_port_password | to_json }},
+	"timeout": {{ shadowsocks_timeout }},
+	"method": "{{ shadowsocks_method }}"
+}

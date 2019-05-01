@@ -1,0 +1,35 @@
+---
+- name: enable tcp_bbr
+  when: "{{ shadowsocks_tcp_bbr }}"
+  include_role:
+    name: tcp_bbr
+
+- name: install supervisor
+  when: ansible_os_family == "RedHat"
+  yum:
+    name: supervisor
+
+- name: install shadowsocks
+  pip:
+    name: shadowsocks
+
+- name: apply shadowsocks config
+  template:
+    src: shadowsocks.json
+    dest: /etc/shadowsocks.json
+  notify:
+    - restart supervisord
+
+- name: apply shadowsocks module for supervisord
+  template:
+    src: shadowsocks.ini
+    dest: /etc/supervisord.d/shadowsocks.ini
+  notify:
+    - restart supervisord
+
+- name: enable and start supervisord
+  service:
+    name: supervisord
+    enabled: yes
+    state: started
+...
