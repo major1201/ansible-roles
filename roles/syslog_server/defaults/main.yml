@@ -1,0 +1,5 @@
+---
+# log_path must end with a slash("/")
+log_path: /var/log/hosts/
+max_connections: 50
+...

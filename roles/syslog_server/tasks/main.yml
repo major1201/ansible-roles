@@ -1,0 +1,34 @@
+---
+- name: install syslog-ng package
+  when: ansible_os_family == "RedHat"
+  yum:
+    name: syslog-ng
+
+- name: sync syslog-ng.conf
+  template:
+    src: syslog-ng.conf
+    dest: /etc/syslog-ng/syslog-ng.conf
+    mode: 0644
+  notify:
+    - restart syslog-ng
+
+- name: ensure conf.d directory exists
+  file:
+    path: /etc/syslog-ng/conf.d/
+    mode: 0755
+    state: directory
+
+- name: sync server.conf
+  template:
+    src: server.conf
+    dest: /etc/syslog-ng/conf.d/server.conf
+    mode: 0644
+  notify:
+    - restart syslog-ng
+
+- name: enable and start syslog-ng
+  service:
+    name: syslog-ng
+    enabled: yes
+    state: started
+...
