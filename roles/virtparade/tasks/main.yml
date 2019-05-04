@@ -1,0 +1,53 @@
+---
+- name: install virtparade requirements(debian)
+  when: ansible_os_family == "Debian"
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - qemu-kvm
+    - virtinst
+    - libguestfs-tools
+    - python3
+    - python3-pip
+
+- name: install virtparade requirements(rhel7)
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python34
+    - python34-pip
+    - libvirt-client
+    - qemu-img
+    - libguestfs-tools-c
+
+- name: install virtparade
+  pip:
+    name: "{{ virtparade_pip_name }}"
+    executable: pip3
+
+- name: create config dirs
+  file:
+    name: "{{ item }}"
+    state: directory
+  with_items:
+    - /etc/virtparade
+    - /etc/virtparade/script.d
+
+- name: apply config files
+  block:
+    - copy:
+        src: "{{ virtparade_instance_xml }}"
+        dest: /etc/virtparade/instance.xml
+        mode: 0644
+    - template:
+        src: "{{ virtparade_config }}"
+        dest: /etc/virtparade/config.yml
+        mode: 0644
+    - copy:
+        src: "{{ virtparade_scriptd }}"
+        dest: /etc/virtparade/
+        mode: 0755
+...

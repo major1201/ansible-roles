@@ -1,0 +1,25 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: major1201
+  description: virtparade
+  license: MIT
+  min_ansible_version: 2.4
+  platforms:
+    - name: EL
+      versions:
+        - 7
+    - name: Debian
+      versions:
+        - jessie
+        - stretch
+    - name: Ubuntu
+      versions:
+        - trusty
+        - xenial
+        - bionic
+  galaxy_tags:
+    - system
+    - virtparade
+...

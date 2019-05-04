@@ -1,0 +1,6 @@
+---
+virtparade_pip_name: virtparade
+virtparade_instance_xml: instance.xml
+virtparade_config: config.yml
+virtparade_scriptd: script.d
+...
