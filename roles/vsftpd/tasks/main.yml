@@ -1,0 +1,46 @@
+---
+- name: install vsftpd package
+  when: ansible_os_family == "RedHat"
+  yum:
+    name: vsftpd
+
+- name: register vsftpd version
+  when: ansible_os_family == "RedHat"
+  shell: rpm -qa --qf '%{VERSION}' vsftpd | awk -F. '{print $1}'
+  register: vsftpd_version
+
+- name: ensure log directory exists
+  file:
+    path: /var/log/vsftpd
+    mode: 0755
+    state: directory
+
+- name: vsftpd logrotate
+  copy:
+    src: vsftpd.logrotate
+    dest: /etc/logrotate.d/vsftpd
+    mode: 0644
+
+- name: sync vsftpd.conf
+  template:
+    src: vsftpd.conf
+    dest: /etc/vsftpd/vsftpd.conf
+    mode: 0600
+  notify:
+    - restart vsftpd
+
+- name: copy pem file
+  when: enable_ssl
+  copy:
+    src: "{{ pem_file }}"
+    dest: /etc/vsftpd/vsftpd.pem
+    mode: 0400
+  notify:
+    - restart vsftpd
+
+- name: enable and start vsftpd
+  service:
+    name: vsftpd
+    enabled: yes
+    state: started
+...

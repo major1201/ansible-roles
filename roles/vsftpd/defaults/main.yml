@@ -1,0 +1,5 @@
+---
+listen_port: 21
+enable_ssl: false
+pem_file: vsftpd.pem
+...
