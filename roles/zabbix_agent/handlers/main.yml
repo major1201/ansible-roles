@@ -1,0 +1,6 @@
+---
+- name: restart zabbix agentd
+  service:
+    name: zabbix-agent
+    state: restarted
+...

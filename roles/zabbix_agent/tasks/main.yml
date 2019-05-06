@@ -1,0 +1,47 @@
+---
+- name: install zabbix-agent package
+  package:
+    name: zabbix-agent
+
+- name: copy zabbix config
+  template:
+    src: zabbix_agentd.conf
+    dest: /etc/zabbix/zabbix_agentd.conf
+  notify:
+    - restart zabbix agentd
+
+- name: copy zabbix_agentd.d
+  copy:
+    src: zabbix/zabbix_agentd.d
+    dest: /etc/zabbix/
+  notify:
+    - restart zabbix agentd
+
+- name: make sure userparameter_mysql.conf is absent
+  file:
+    path: /etc/zabbix/zabbix_agentd.d/userparameter_mysql.conf
+    state: absent
+  notify:
+    - restart zabbix agentd
+
+- name: copy custom zabbix-scripts
+  copy:
+    src: zabbix/zabbix-scripts
+    dest: /etc/zabbix/
+
+- name: apply zabbix script config file
+  template:
+    src: zabbix-scripts.yml
+    dest: /etc/zabbix/zabbix-scripts/conf.yml
+
+- name: install pip requirements
+  pip:
+    requirements: /etc/zabbix/zabbix-scripts/requirements.txt
+  ignore_errors: true
+
+- name: enable and start zabbix agentd
+  service:
+    name: zabbix-agent
+    enabled: yes
+    state: started
+...

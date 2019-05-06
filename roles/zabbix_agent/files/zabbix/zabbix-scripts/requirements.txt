@@ -1,0 +1,6 @@
+future
+argparse
+pyyaml
+requests
+sqlalchemy
+pymysql

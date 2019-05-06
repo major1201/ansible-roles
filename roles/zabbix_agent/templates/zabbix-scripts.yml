@@ -1,0 +1,21 @@
+---
+system:
+  project_name: zabbix-scripts
+  log_stdout: 1
+  log_file: 0
+  log_file_path:
+  log_level: 30
+
+nginx:
+  stub_url: "{{ zabbix_script_nginx_stub_url }}"
+
+php-fpm:
+  status_url: "{{ zabbix_script_phpfpm_status_url }}"
+
+mysql:
+  url: mysql+mysqldb://{{ zabbix_script_mysql_username }}:{{ zabbix_script_mysql_password }}@127.0.0.1:{{ zabbix_script_mysql_port }}/mysql?charset=utf8
+  pool_size: 20
+  max_overflow: 0
+  pool_recycle: 5
+  pool_timeout: 3600
+...
