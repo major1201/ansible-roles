@@ -1,0 +1,16 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: major1201
+  description: zabbix_proxy
+  license: MIT
+  min_ansible_version: 2.4
+  platforms:
+    - name: EL
+      versions:
+        - 7
+  galaxy_tags:
+    - system
+    - zabbix_proxy
+...

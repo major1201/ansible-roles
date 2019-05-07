@@ -1,0 +1,22 @@
+---
+- name: import schema - 1. upload schema sql
+  copy:
+    src: schema.sql
+    dest: /tmp/schema.sql
+
+- name: import schema - 2. upload the import script
+  template:
+    src: import_schema.sh
+    dest: /tmp/import_schema.sh
+
+- name: import schema - 3. import the sql file
+  shell: /tmp/import_schema.sh
+
+- name: import schema - 4. remove scripts
+  file:
+    dest: "{{ item }}"
+    state: absent
+  with_items:
+    - /tmp/schema.sql
+    - /tmp/import_schema.sh
+...

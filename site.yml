@@ -4,6 +4,56 @@
   roles:
     - name: sshd
       tags: sshd
+    - name: common
+      tags: common
     - name: ansible
       tags: ansible
+    - name: ceph
+      tags: ceph
+    - name: ceph-client
+      tags: ceph-client
+    - name: dhcpd
+      tags: dhcpd
+    - name: docker
+      tags: docker
+    - name: docker-distribution
+      tags: docker-distribution
+    - name: ipmitool
+      tags: ipmitool
+    - name: iptables
+      tags: iptables
+    - name: kubernetes
+      tags: kubernetes
+    - name: kvm
+      tags: kvm
+    - name: mysql
+      tags: mysql
+    - name: nfs
+      tags: nfs
+    - name: nginx
+      tags: nginx
+    - name: ntp
+      tags: ntp
+    - name: openldap
+      tags: openldap
+    - name: rabbitmq
+      tags: rabbitmq
+    - name: redis
+      tags: redis
+    - name: rsync
+      tags: rsync
+    - name: shadowsocks
+      tags: shadowsocks
+    - name: syslog_server
+      tags: syslog_server
+    - name: tcp_bbr
+      tags: tcp_bbr
+    - name: virtparade
+      tags: virtparade
+    - name: vsftpd
+      tags: vsftpd
+    - name: zabbix_agent
+      tags: zabbix_agent
+    - name: zabbix_proxy
+      tags: zabbix_proxy
 ...

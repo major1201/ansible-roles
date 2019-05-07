@@ -1,0 +1,32 @@
+---
+# -------------------------------------------------------------------------
+# ------------------------------ !IMPORTANT! ------------------------------
+# Make sure you have already applied mysql role the the zabbix proxy server
+# -------------------------------------------------------------------------
+
+- name: check if zabbix proxy has already been installed
+  shell: rpm -qa zabbix-proxy | wc -l
+  register: rpm_zabbix_proxy
+
+- name: install zabbix proxy package
+  package:
+    name: zabbix-proxy
+
+- name: import mysql schema for fresh install
+  when: rpm_zabbix_proxy.stdout == '0'
+  include_tasks: import_schema.yml
+
+- name: apply zabbix proxy config file
+  template:
+    src: zabbix_proxy.conf
+    dest: /etc/zabbix/zabbix_proxy.conf
+    mode: 0644
+  notify:
+    - restart zabbix proxy
+
+- name: enable and start zabbix proxy
+  service:
+    name: zabbix-proxy
+    enabled: yes
+    state: started
+...
