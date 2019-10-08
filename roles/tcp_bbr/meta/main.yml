@@ -1,6 +1,6 @@
 ---
-dependencies:
-  - role: kernel
+# dependencies:
+#   - role: kernel
 
 galaxy_info:
   author: major1201
