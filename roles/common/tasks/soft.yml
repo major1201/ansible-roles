@@ -42,7 +42,7 @@
   retries: 100
 
 - name: install required softwares centos6
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "6"
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == 6
   yum:
     name: "{{ item }}"
     state: present
@@ -51,7 +51,7 @@
     - python-pip
 
 - name: install required softwares centos7
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == 7
   yum:
     name: "{{ item }}"
     state: present

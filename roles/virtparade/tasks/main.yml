@@ -12,7 +12,7 @@
     - python3-pip
 
 - name: install virtparade requirements(rhel7)
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == 7
   yum:
     name: "{{ item }}"
     state: present

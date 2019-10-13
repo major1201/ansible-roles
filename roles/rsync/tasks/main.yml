@@ -1,13 +1,13 @@
 ---
 - name: rhel6 pkgs
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "6"
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == 6
   set_fact:
     rsync_pkgs:
       - rsync
       - xinetd
 
 - name: rhel7 pkgs
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == 7
   set_fact:
     rsync_pkgs:
       - rsync
@@ -62,7 +62,7 @@
   with_items: "{{ rsync_dirs }}"
 
 - name: enable rsync in xinetd(rhel6)
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "6"
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == 6
   copy:
     src: rsync.xinetd
     dest: /etc/xinetd.d/rsync
@@ -71,14 +71,14 @@
     mode: 0644
 
 - name: enable and start xinetd(rhel6)
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == 7
   service:
     name: xinetd
     enabled: yes
     state: started
 
 - name: enable and start rsyncd(rhel7)
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == 7
   service:
     name: rsyncd
     enabled: yes

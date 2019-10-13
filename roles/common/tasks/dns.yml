@@ -1,6 +1,6 @@
 ---
 - name: disable dns overwrite be NetworkManger on CentOS 7
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == 7
   copy:
     src: dns.conf
     dest: /etc/NetworkManager/conf.d/dns.conf
@@ -8,7 +8,7 @@
     - restart network manager
 
 - name: restart network manager now
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == 7
   meta: flush_handlers
 
 - name: remove resolv.conf hard links

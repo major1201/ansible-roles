@@ -1,6 +1,6 @@
 ---
 - name: ensure rhel 7
-  when: not (ansible_os_family == "RedHat" and ansible_distribution_major_version == "7")
+  when: not (ansible_os_family == "RedHat" and ansible_distribution_major_version == 7)
   fail:
     msg: "This OpenLDAP role only support rhel 7"
 

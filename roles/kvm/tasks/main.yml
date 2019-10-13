@@ -10,7 +10,7 @@
     - bridge-utils
 
 - name: install kvm related packages(debian)
-  when: ansible_distribution == "Debian" and ansible_distribution_major_version < '9'
+  when: ansible_distribution == "Debian" and ansible_distribution_major_version < 9
   apt:
     name: "{{ item }}"
   with_items:
@@ -20,7 +20,7 @@
     - libguestfs-tools
 
 - name: install kvm related packages(debian9)
-  when: ansible_distribution == "Debian" and ansible_distribution_major_version == '9'
+  when: ansible_distribution == "Debian" and ansible_distribution_major_version >= 9
   apt:
     name: "{{ item }}"
   with_items:
@@ -54,14 +54,14 @@
     - libvirtd
 
 - name: enable and start libvirt-bin(debian)
-  when: ansible_distribution == "Debian" and ansible_distribution_major_version < '9'
+  when: ansible_distribution == "Debian" and ansible_distribution_major_version < 9
   service:
     name: libvirt-bin
     enabled: yes
     state: started
 
 - name: enable and start libvirtd(debian9)
-  when: ansible_distribution == "Debian" and ansible_distribution_major_version == '9'
+  when: ansible_distribution == "Debian" and ansible_distribution_major_version >= 9
   service:
     name: libvirtd
     enabled: yes
