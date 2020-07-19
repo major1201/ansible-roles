@@ -1,10 +1,9 @@
 ---
 - name: install keepalived packages
   yum:
-    name: "{{ item }}"
-  with_items:
-    - keepalived
-    - ipvsadm
+    name:
+      - keepalived
+      - ipvsadm
 
 - name: apply keepalived config files
   template:

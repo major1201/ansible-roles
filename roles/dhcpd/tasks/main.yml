@@ -2,11 +2,10 @@
 - name: install dhcpd packages
   when: ansible_os_family == "RedHat"
   yum:
-    name: "{{ item }}"
-  with_items:
-    - dhcp
-    - dhcp-devel
-    - dhcping
+    name:
+      - dhcp
+      - dhcp-devel
+      - dhcping
 
 - name: apply config files
   template:

@@ -1,10 +1,9 @@
 ---
 - name: install pkgs
   yum:
-    name: "{{ item }}"
-  with_items:
-    - openldap-clients
-    - nss-pam-ldapd
+    name:
+      - openldap-clients
+      - nss-pam-ldapd
 
 - name: authconfig
   shell: authconfig --enableldap --enableldapauth --ldapserver={{ ldap_server }} --ldapbasedn="{{ ldap_suffix }}" --enablemkhomedir {{ '--enableldaptls' if ldap_ssl_enabled else '--disableldapstarttls' }} --update

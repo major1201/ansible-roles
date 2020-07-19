@@ -15,8 +15,7 @@
 - name: install rsync package
   when: ansible_os_family == "RedHat"
   yum:
-    name: "{{ item }}"
-  with_items: "{{ rsync_pkgs }}"
+    name: "{{ rsync_pkgs }}"
 
 - name: rsync config file
   template:

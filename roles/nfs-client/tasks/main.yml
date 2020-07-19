@@ -2,9 +2,8 @@
 - name: install packages
   when: is_redhat_family
   yum:
-    name: "{{ item }}"
-  with_items:
-    - nfs-utils
+    name:
+      - nfs-utils
 
 - name: ensure nfs mountpoint exists
   file:

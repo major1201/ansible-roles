@@ -2,10 +2,9 @@
 - name: install packages(debian)
   when: is_debian_family
   apt:
-    name: "{{ item }}"
-  with_items:
-    - ipmitool
-    - openipmi
+    name:
+      - ipmitool
+      - openipmi
 
 - name: install packages(rhel)
   when: is_redhat_family

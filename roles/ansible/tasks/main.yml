@@ -2,10 +2,9 @@
 - name: install ansible package
   when: ansible_os_family == "RedHat"
   yum:
-    name: "{{ item }}"
-  with_items:
-    - ansible
-    - sshpass
+    name:
+      - ansible
+      - sshpass
 
 - name: ensure config directory exists
   file:

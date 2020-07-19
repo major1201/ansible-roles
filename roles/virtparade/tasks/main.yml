@@ -2,26 +2,24 @@
 - name: install virtparade requirements(debian)
   when: ansible_os_family == "Debian"
   apt:
-    name: "{{ item }}"
+    name:
+      - qemu-kvm
+      - virtinst
+      - libguestfs-tools
+      - python3
+      - python3-pip
     state: present
-  with_items:
-    - qemu-kvm
-    - virtinst
-    - libguestfs-tools
-    - python3
-    - python3-pip
 
 - name: install virtparade requirements(rhel7)
   when: ansible_os_family == "RedHat" and ansible_distribution_major_version == 7
   yum:
-    name: "{{ item }}"
+    name:
+      - python34
+      - python34-pip
+      - libvirt-client
+      - qemu-img
+      - libguestfs-tools-c
     state: present
-  with_items:
-    - python34
-    - python34-pip
-    - libvirt-client
-    - qemu-img
-    - libguestfs-tools-c
 
 - name: install virtparade
   pip:

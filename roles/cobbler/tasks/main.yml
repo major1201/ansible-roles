@@ -1,19 +1,18 @@
 ---
 - name: install cobbler related pkgs
   yum:
-    name: "{{ item }}"
-  with_items:
-    - cobbler
-    - cobbler-web
-    - pykickstart
-    - httpd
-    - dhcp
-    - tftp-server
-    - xinetd
-    - rsync
-    - debmirror
-    - fence-agents
-    - python-django
+    name:
+      - cobbler
+      - cobbler-web
+      - pykickstart
+      - httpd
+      - dhcp
+      - tftp-server
+      - xinetd
+      - rsync
+      - debmirror
+      - fence-agents
+      - python-django
 
 - name: set cobbler server ip
   lineinfile:

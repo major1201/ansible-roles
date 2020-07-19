@@ -1,11 +1,10 @@
 ---
 - name: install packages
   apt:
-    name: "{{ item }}"
-  with_items:
-    - libnss-ldap
-    - libpam-ldap
-    - ldap-utils
+    name:
+      - libnss-ldap
+      - libpam-ldap
+      - ldap-utils
   environment:
     DEBIAN_FRONTEND: noninteractive
 

@@ -2,10 +2,9 @@
 - name: install packages
   when: ansible_os_family == "RedHat"
   yum:
-    name: "{{ item }}"
-  with_items:
-    - nfs-utils
-    - rpcbind
+    name:
+      - nfs-utils
+      - rpcbind
 
 - name: apply export file
   template:
